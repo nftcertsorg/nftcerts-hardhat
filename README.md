@@ -1,4 +1,13 @@
-# Basic Sample Hardhat Project
+# NFTCert Hardhat
+
+Repository containing the smart contract code for NFT Cert
+
+#### Install & Run
+
+install packages: `npm i`
+setup env file: create a .env file from .env.config, add your ethereum private key to .env
+
+#### Hardhat commands
 
 This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
 

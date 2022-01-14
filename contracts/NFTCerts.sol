@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
-contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
+contract NFTCerts is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   using Counters for Counters.Counter;
 
   Counters.Counter private _tokenIdCounter;
@@ -45,6 +45,15 @@ contract MyToken is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
 
   function setTokenURI(uint256 tokenId, string memory _tokenURI) external {
     super._setTokenURI(tokenId, _tokenURI);
+  }
+
+  function getTokenIds(address _owner) public view returns(uint[] memory) {
+    uint[] memory _tokensOfOwner = new uint[](ERC721.balanceOf(_owner));
+
+    for (uint i = 0; i < ERC721.balanceOf(_owner); i++) {
+      _tokensOfOwner[i] = ERC721Enumerable.tokenOfOwnerByIndex(_owner, i);
+    }
+    return _tokensOfOwner;
   }
 
   function supportsInterface(bytes4 interfaceId)

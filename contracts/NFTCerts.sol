@@ -6,32 +6,21 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "hardhat/console.sol";
 
 contract NFTCerts is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
   using Counters for Counters.Counter;
-
   Counters.Counter private _tokenIdCounter;
+  mapping(uint256 => bytes32) private tokenIdToMetadataHash;
 
   constructor() ERC721("NFTCert", "NFTC") {}
 
-  function safeMint(address to, string memory uri) public {
+  function mint(address to, string memory uri, bytes32 metadataHash) public {
     uint256 tokenId = _tokenIdCounter.current();
     _tokenIdCounter.increment();
     _safeMint(to, tokenId);
     _setTokenURI(tokenId, uri);
-  }
-
-  // The following functions are overrides required by Solidity.
-
-  function _beforeTokenTransfer(address from, address to, uint256 tokenId)
-    internal
-    override(ERC721, ERC721Enumerable)
-  {
-    super._beforeTokenTransfer(from, to, tokenId);
-  }
-
-  function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
-    super._burn(tokenId);
+    tokenIdToMetadataHash[tokenId] = metadataHash;
   }
 
   function tokenURI(uint256 tokenId)
@@ -53,7 +42,23 @@ contract NFTCerts is ERC721, ERC721Enumerable, ERC721URIStorage, Ownable {
     for (uint i = 0; i < ERC721.balanceOf(_owner); i++) {
       _tokensOfOwner[i] = ERC721Enumerable.tokenOfOwnerByIndex(_owner, i);
     }
+
     return _tokensOfOwner;
+  }
+
+  function getTokenMetadataHash(uint256 tokenId) public view returns(bytes32) {
+    return tokenIdToMetadataHash[tokenId];
+  }
+
+  function _beforeTokenTransfer(address from, address to, uint256 tokenId)
+    internal
+    override(ERC721, ERC721Enumerable)
+  {
+    super._beforeTokenTransfer(from, to, tokenId);
+  }
+
+  function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) {
+    super._burn(tokenId);
   }
 
   function supportsInterface(bytes4 interfaceId)

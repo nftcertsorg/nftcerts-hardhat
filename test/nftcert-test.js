@@ -20,13 +20,21 @@ describe("NFTCert", function () {
     })
 
     it("should mint a token", async () => {
-      tx = await nftCerts.safeMint(accounts[0].address, 'https://nftcerts.com/id')
+      const metadataHash = ethers.utils.formatBytes32String('some kinda hash')
+      const uri = 'https://nftcerts.com/id'
+      tx = await nftCerts.mint(accounts[0].address, uri, metadataHash)
       await tx.wait()
 
       tx = await nftCerts.getTokenIds(accounts[0].address)
       tx.forEach(async tid => {
         expect(tid.toString()).to.equal('0')
       })
+
+      tx = await nftCerts.getTokenMetadataHash(0)
+      expect(metadataHash).to.equal(tx)
+
+      tx = await nftCerts.tokenURI(0)
+      expect(uri).to.equal(tx)
     })
   })
 });
